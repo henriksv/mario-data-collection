@@ -1,7 +1,7 @@
 #from deepQ_keras import Agent
 from deep_DQN import Agent
 import numpy as np
-from utils import plotLearning
+from utilities import plotLearning
 import gym
 from nes_py.wrappers import JoypadSpace
 import gym_super_mario_bros
