@@ -19,7 +19,7 @@ if __name__=='__main__':
     env = wrapper(env)
 
    # fname_base = 'mario_DDQN-20_60-64_32-8-4_32-4-2_32-3-1_512'
-    fname_base = 'mario_DDQN_test4'
+    fname_base = './mario_DDQN_3lives'
     n_games = 10000
 
     #dims = (240, 256, 3)
@@ -30,7 +30,7 @@ if __name__=='__main__':
     fname_eval = fname_base + '_eval.h5'
     fname_next = fname_base + '_next.h5'
 
-    agent = Agent(gamma=0.9, epsilon=1.0, alpha=0.00025, input_dims=dims, n_actions=7, mem_size=7000, 
+    agent = Agent(gamma=0.9, epsilon=1.0, alpha=0.00025, input_dims=dims, n_actions=7, mem_size=100000, 
                     batch_size=32, epsilon_end=0.01, replace=50, 
                     q_eval_fname=fname_eval, q_target_fname=fname_next)
 
@@ -40,7 +40,6 @@ if __name__=='__main__':
     eps_history = []
 
     #for i in range(n_games):
-
     i = 0
     while(True):
         done = False
