@@ -4,7 +4,10 @@ import json
 from scipy.signal import find_peaks
 
 
-session_path = './DATA/sessions/session0'
+session_fname = 'session0'
+session_path = './DATA/sessions/' + session_fname
+
+e4_path = './DATA/e4/00_1579783503_A00D58/BVP.csv'
 
 with open(session_path) as json_file:
     session = json.load(json_file)
@@ -12,14 +15,10 @@ with open(session_path) as json_file:
 session_start = session['start_time']
 session_stop = session['stop_time']
 
-print(session_start)
-print(session_stop)
-
 bvp = []
-with open('./DATA/e4/00_1579783503_A00D58/BVP.csv', newline='') as csvfile:
+with open(e4_path, newline='') as csvfile:
     rd = csv.reader(csvfile)
     for row in rd:
-        #print(', '.join(row))
         bvp.append(row[0])
 
 e4_start = float(bvp[0])
@@ -28,13 +27,10 @@ samples_pr_sec = bvp[1]
 #print(e4_start)
 #print(samples_pr_sec)
 #print(len(bvp))
-
 x = []
 y = []
 timestep = 1 / 64
-
 j = 2
-
 
 while e4_start < session_start-timestep/2:
     e4_start += timestep
@@ -47,11 +43,10 @@ while e4_end < session_stop-timestep/2:
     e4_end += timestep
     k +=1
 
-
 #print(j)
 #print(k)
-#print(e4_start)
-#print(session_start)
+print(e4_start)
+print(session_start)
 #print(e4_end)
 #print(session_stop)
 
@@ -68,18 +63,15 @@ min_y = min(y) # Normalize with actual min
 
 #min_y = -max_y # Normalize with reverse of max as min
 
-
 range_y = max_y - min_y
 
-print(max_y)
-print(min_y)
-print(range_y)
-
+#print(max_y)
+#print(min_y)
+#print(range_y)
 
 normalized_y = []
 
 for i in range(len(y)):
-
     if y[i] < min_y:
         normalized_y.append(-1)
     else:
@@ -96,7 +88,13 @@ plt.legend()
 plt.show()
 """
 
+normalized_y_positive = []
 
+for i in range(0, len(normalized_y)):
+    if normalized_y[i] > 0 :
+        normalized_y_positive.append(normalized_y[i])
+    else:
+        normalized_y_positive.append(0)
 
 
 
@@ -104,7 +102,7 @@ peaks, _ = find_peaks(normalized_y, distance=40)
 #print(peaks)
 
 single_peak_values = []
-single_peak_values2 = []
+single_peak_values_with_min = []
 cur_val = 0.5
 
 start = 0
@@ -133,24 +131,25 @@ for i in range(0, len(normalized_y)):
             cur_val = new_val
             
         for j in range(start, i+1):
-            single_peak_values2.append(cur_val)
+            single_peak_values_with_min.append(cur_val)
         start = i+1
         
     if i == len(normalized_y)-1:
         for j in range(start, i+1):
-            single_peak_values2.append(cur_val)
+            single_peak_values_with_min.append(cur_val)
 
 
 #print('Len of spv2:', len(single_peak_values2))
 
-normalized_y_positive = []
 
-for i in range(0, len(normalized_y)):
-    if normalized_y[i] > 0 :
-        normalized_y_positive.append(normalized_y[i])
-    else:
-        normalized_y_positive.append(0)
+fname = session_fname + '_estimated_vasoconstriction_values.csv'
 
+with open(fname, 'w') as myfile:
+    wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+    wr.writerow(single_peak_values_with_min)
+
+
+"""
 plt.subplot(5, 1, 1)
 plt.plot(x, y, label='BVP (Normalized)', linewidth=1)
 plt.title('BVP plots')
@@ -177,17 +176,15 @@ plt.ylabel('Vasoconstriction')
 #plt.plot(peaks, x_step[peaks], "x")
 
 plt.subplot(5, 1, 5)
-plt.plot(x_step, single_peak_values2, '.-', linewidth=1)
+plt.plot(x_step, single_peak_values_with_min, '.-', linewidth=1)
 plt.xlabel('steps')
-plt.ylabel('Vasoconstriction')
+plt.ylabel('Vasoconstriction with minimum')
 #plt.plot(peaks, x_step[peaks], "x")
 
 
-leg = plt.legend()
+#leg = plt.legend()
 plt.show()
 
 #https://matplotlib.org/3.1.1/gallery/text_labels_and_annotations/annotation_demo.html
 
-
-
-#x2 = range(0, len(normalized_y))
+"""
