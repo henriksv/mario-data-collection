@@ -3,47 +3,47 @@ import csv
 import json
 from scipy.signal import find_peaks
 
+def prune_IBI():
+    session_fname = 'session0'
+    session_path = './DATA/sessions/' + session_fname
+    ibi_path = './DATA/e4/00_1579783503_A00D58/IBI.csv'
 
-session_fname = 'session0'
-session_path = './DATA/sessions/' + session_fname
-ibi_path = './DATA/e4/00_1579783503_A00D58/IBI.csv'
+    with open(session_path) as json_file:
+        session = json.load(json_file)
 
-with open(session_path) as json_file:
-    session = json.load(json_file)
+    session_start = session['start_time']
+    session_stop = session['stop_time']
+    timestep = 1 / 60
 
-session_start = session['start_time']
-session_stop = session['stop_time']
-timestep = 1 / 60
+    ibi = []
+    with open(ibi_path, newline='') as csvfile:
+        rd = csv.reader(csvfile)
+        for row in rd:
+            #print(row)
+            ibi.append(row)
 
-ibi = []
-with open(ibi_path, newline='') as csvfile:
-    rd = csv.reader(csvfile)
-    for row in rd:
-        #print(row)
-        ibi.append(row)
+    ibi_start = float(ibi[0][0])
+    ibi_time = ibi_start
+    pruned_ibi = []
 
-ibi_start = float(ibi[0][0])
-ibi_time = ibi_start
-pruned_ibi = []
+    i = 0
+    while ibi_time < session_start:
+        i +=1
+        ibi_time = ibi_start + float(ibi[i][0])
 
-i = 0
-while ibi_time < session_start:
-    i +=1
-    ibi_time = ibi_start + float(ibi[i][0])
-
-skipped_time = float(ibi[i][0]) - float(ibi[i][1])
+    skipped_time = float(ibi[i][0]) - float(ibi[i][1])
 
 
-pruned_ibi.append([ibi_time - float(ibi[i][1]), 'IBI'])
+    pruned_ibi.append([ibi_time - float(ibi[i][1]), 'IBI'])
 
-while ibi_time < session_stop and i < len(ibi):
-    pruned_ibi.append([float(ibi[i][0])-skipped_time, ibi[i][1]])
-    i += 1
+    while ibi_time < session_stop and i < len(ibi):
+        pruned_ibi.append([float(ibi[i][0])-skipped_time, ibi[i][1]])
+        i += 1
 
-#print(pruned_ibi)
+    #print(pruned_ibi)
 
-fname = session_fname + '_pruned_IBI.csv'
+    fname = session_fname + '_pruned_IBI.csv'
 
-with open(fname, 'w') as myfile:
-    wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-    wr.writerow(pruned_ibi)
+    with open(fname, 'w') as myfile:
+        wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+        wr.writerow(pruned_ibi)
