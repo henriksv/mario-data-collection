@@ -5,14 +5,13 @@ import gym_super_mario_bros
 from pyglet import clock
 from _image_viewer import ImageViewer
 import numpy as np
-#import codecs 
 import json
 import os
 import time
 from random import randint
 
-import stages # Contains the custom stage order as well as methods for transitioning to next stage
-
+# Contains the custom stage order as well as methods for transitioning to next stage
+import stages 
 
 # the sentinel value for "No Operation"
 _NOP = 0
@@ -36,14 +35,12 @@ def play_human_record(callback=None):
         None
 
     """
-
     # Start on the first world
     first_world = 'SuperMarioBros-1-1-v0'
     env = gym_super_mario_bros.make(first_world)
 
     observations = [] #For Storing observations
     
-
     # set the frame rate for pyglet
     clock.set_fps_limit(env.metadata['video.frames_per_second'])
     # ensure the observation space is a box of pixels
@@ -165,8 +162,6 @@ def play_human_record(callback=None):
     data['stop_time'] = end
     data['score'] = score
 
-    #folder_path = '/home/henrik/Documents/MarioExperiment/DATA/sessions/'
-    #folder_path = '/home/ninja/Skrivebord/Dokumenter/Kode/MarioExperiment/DATA/sessions/'
     folder_path = './DATA/sessions/'
 
     if not os.path.exists(folder_path):
