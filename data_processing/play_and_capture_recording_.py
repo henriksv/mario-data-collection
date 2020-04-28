@@ -11,57 +11,24 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 
+from stages import stage_order, make_next_stage
 
-stage_order = [
-    (1,1),
-    (1,2),
-    (1,3),
-    (2,2),
-    (1,4),
-    (3,1),
-    (4,1),
-    (2,1),
-    (2,3),
-    (2,4),
-    (3,2),
-    (3,3),
-    (3,4),
-    (4,2)
-]
 
-#play_time = 600 # 10min
-#play_time = 2100 # 35min
+def downscale(frame, width, height):
+    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+    frame = cv2.resize(frame, (width, height), interpolation=cv2.INTER_AREA)
+    return frame
 
 stage_order_len = len(stage_order)
+session_number = "6"
 
-def make_next_stage(world, stage, num):
-    base = 'SuperMarioBros-'
-    tail = '-v0'
-
-    if num < stage_order_len:
-        world = stage_order[num][0]
-        stage = stage_order[num][1]
-    else:
-        if stage >= 4:
-            stage = 1
-
-            if world >= 8:
-                world = 1
-            else:
-                world += 1
-        else:
-            stage += 1
-    new_world = base + str(world) + '-' + str(stage) + tail
-
-    return world, stage, new_world
-
-filepath = './DATA/sessions/session0'
-infopath= './DATA/video_info/info0.json'
+filepath = './DATA/sessions/session'+session_number
+infopath= './DATA/video_info/info'+session_number+'.json'
 
 with open(infopath) as json_file:
     video_info =  json.load(json_file)
 
-cap = cv2.VideoCapture('./DATA/videos/video0.avi')
+cap = cv2.VideoCapture('./DATA/videos/video'+session_number+'.avi')
 
 with open(filepath) as json_file:
     data = json.load(json_file)
@@ -120,9 +87,13 @@ print('GS:' + str(game_start))
 states = []
 
 is_first = True
-no = 1
+no = 0
+finish = False
 
 steps = 0
+
+total_steps = 0
+gap_indices = []
 
 for action in data['obs']:
     #clock.tick()   
@@ -131,6 +102,7 @@ for action in data['obs']:
     
     next_state, reward, done, info = env.step(action)
     steps += 1
+    total_steps += 1
     
     #Capture 2 game-frames for each video-frame
     """
@@ -148,15 +120,13 @@ for action in data['obs']:
 
 
     #Capture 1 game-frames for each video-frame by skipping every 2nd frame
-    cvt_state = cv2.cvtColor(next_state, cv2.COLOR_BGR2RGB)  
+    cvt_state = cv2.cvtColor(next_state, cv2.COLOR_BGR2RGB)
+    cvt_state = downscale(cvt_state, 84, 84)
     if is_first:
         #cv2.imwrite("./DATA/testFrames/state" + str(no) + "-1.png", cvt_state)
         is_first = False
     else:
-        cv2.imwrite("./DATA/game_frames/state" + str(no) + ".png", cvt_state)
-        #cv2.imwrite("./home/henriksv/Documents/RL/mario-data-collection/mario-data-collection/data_processing/game_frames/state" + str(no) + ".png", cvt_state)
-        ret, frame = cap.read()
-        cv2.imwrite("./DATA/video_frames/image" + str(no) + ".png", frame)
+        cv2.imwrite("./DATA/game_frames/"+session_number+"/state" + str(no) + ".png", cvt_state)
         is_first = True
         no += 1
     
@@ -173,11 +143,62 @@ for action in data['obs']:
         end = time.time()
         
         if finish or steps >= 16000:
-                    stage_num += 1
-                    world, stage, new_world = make_next_stage(world, stage, stage_num)
-                    env.close()
-                    env = gym_super_mario_bros.make(new_world)
-                    finish = False
-                    steps = 0
+            stage_num += 1
+            world, stage, new_world = make_next_stage(world, stage, stage_num)
+            env.close()
+            env = gym_super_mario_bros.make(new_world)
+            finish = False
+            steps = 0
+            gap_indices.append(total_steps)
 
         next_state = env.reset()
+        
+       
+#Extract video
+n_gaps = len(gap_indices)
+
+n_actions = len(data['obs'])
+missing = 126000 - n_actions
+video_frames_to_skip = missing/2
+avg_gap_len = int(video_frames_to_skip / n_gaps)
+extra = video_frames_to_skip % n_gaps
+
+"""
+print(n_gaps)
+print(video_frames_to_skip)
+print(avg_gap_len)
+print(extra)
+"""
+i = 0
+skips = 0
+
+first = True
+print('Extracting video')
+for i in range(n_actions):    
+    if first:
+        first = False
+        i += 1
+    else:
+        first = True
+        ret, frame = cap.read()
+        frame = downscale(frame, 120, 120)
+        cv2.imwrite("./DATA/video_frames/"+session_number+"/image" + str(i) + ".png", frame)
+        i += 1
+    if i in gap_indices:
+        skips += 1
+        for j in range(int(avg_gap_len)):
+            ret, frame = cap.read()
+        if extra > 0:
+            ret, frame = cap.read()
+            extra -= 1
+    i += 1
+
+print('Saving gap_info')
+gap_info = {}
+gap_info['indices'] = gap_indices
+gap_info['missing'] = missing
+
+gap_path = "./DATA/gap_info"+session_number
+print('Saving gaps to file')
+with open(gap_path, 'w') as outfile:
+    json.dump(gap_info, outfile)
