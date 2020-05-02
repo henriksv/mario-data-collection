@@ -42,11 +42,12 @@ if __name__=='__main__':
     n_frames = 4
     img_rows, img_cols = dims[0], dims[1] #Downscaled
 
-    memory_size = 100
-    n_games = 10
-    plot_check = 2
-    model_save = 2
-    print_and_save = 2
+    memory_size = 500
+    n_games = 100
+    plot_check = 10
+    model_save = 10
+    print_check = 5
+    episodes_save_check = 10
 
     fname_eval = fname_base + '_eval.h5'
     fname_next = fname_base + '_next.h5'
@@ -125,7 +126,7 @@ if __name__=='__main__':
        
             
 
-        if i % print_and_save == 0:
+        if i % print_check == 0:
             """    
             avg_success = np.mean(success_history[max(0,i-100):(i+1)])
             avg_dist    = np.mean(pos_history[max(0,i-100):(i+1)])
@@ -144,9 +145,11 @@ if __name__=='__main__':
             print('score            %.2f' % score, '     average score %.2f' % avg_score)
             print('time             %.2f' % (400 - info['time']) ,'       average time %.2f' % avg_time)
             print('distance         %.2f' % info['x_pos'] , '     average distance %.2f' % avg_dist)
-            print('success          %.2f' % info['flag_get'] ,  '      average success %.2f' % avg_success)
-            print('progression_rate %.2f' % progression_rate, '      avg_progression %.2f' % avg_progression)
+            print('success          %.2f' % info['flag_get'] ,  '        average success %.2f' % avg_success)
+            print('progression_rate %.2f' % progression_rate, '       avg_progression %.2f' % avg_progression)
             
+        if i % episodes_save_check:
+
             episode_history = {
                 'epsilon' : epsilon_history,
                 'scores' : scores,
