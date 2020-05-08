@@ -196,5 +196,5 @@ def synch_bvp(session_number, halve=False, normalize=False):
 
     return matching_bvp
 
-bv1 = synch_bvp(6, halve=True)
-bv2 = synch_bvp(6, halve=True, normalize=True)
+#bv1 = synch_bvp(6, halve=True)
+#bv2 = synch_bvp(6, halve=True, normalize=True)

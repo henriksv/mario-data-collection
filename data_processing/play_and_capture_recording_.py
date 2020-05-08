@@ -21,6 +21,7 @@ def downscale(frame, width, height):
 
 stage_order_len = len(stage_order)
 session_number = "6"
+downscaled_h = 84
 
 filepath = './DATA/sessions/session'+session_number
 infopath= './DATA/video_info/info'+session_number+'.json'
@@ -121,7 +122,7 @@ for action in data['obs']:
 
     #Capture 1 game-frames for each video-frame by skipping every 2nd frame
     cvt_state = cv2.cvtColor(next_state, cv2.COLOR_BGR2RGB)
-    cvt_state = downscale(cvt_state, 84, 84)
+    cvt_state = downscale(cvt_state, downscaled_h, downscaled_h)
     if is_first:
         #cv2.imwrite("./DATA/testFrames/state" + str(no) + "-1.png", cvt_state)
         is_first = False
@@ -198,7 +199,7 @@ gap_info = {}
 gap_info['indices'] = gap_indices
 gap_info['missing'] = missing
 
-gap_path = "./DATA/gap_info"+session_number
+gap_path = "./DATA/gap_info/gap_info"+session_number
 print('Saving gaps to file')
 with open(gap_path, 'w') as outfile:
     json.dump(gap_info, outfile)

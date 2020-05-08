@@ -4,9 +4,9 @@ import json
 from scipy.signal import find_peaks
 
 def prune_IBI():
-    session_fname = 'session0'
+    session_fname = 'session6'
     session_path = './DATA/sessions/' + session_fname
-    ibi_path = './DATA/e4/00_1579783503_A00D58/IBI.csv'
+    ibi_path = './DATA/e4/6/IBI.csv'
 
     with open(session_path) as json_file:
         session = json.load(json_file)
@@ -40,10 +40,13 @@ def prune_IBI():
         pruned_ibi.append([float(ibi[i][0])-skipped_time, ibi[i][1]])
         i += 1
 
-    #print(pruned_ibi)
+    print(pruned_ibi)
 
-    fname = session_fname + '_pruned_IBI.csv'
+    fname = './DATA/' + session_fname + '_pruned_IBI.csv'
 
     with open(fname, 'w') as myfile:
+        print('writing to: ' + fname)
         wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
         wr.writerow(pruned_ibi)
+
+prune_IBI()
