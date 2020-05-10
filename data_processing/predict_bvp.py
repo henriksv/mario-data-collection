@@ -18,7 +18,7 @@ import numpy as np
 from tensorflow.keras.utils import Sequence
 
 from keras.models import Sequential
-from keras.layers import Conv2D, Dense, Flatten, MaxPooling2D, Dropout
+from keras.layers import Conv2D, Dense, Flatten, MaxPooling2D, Dropout, BatchNormalization
 
 class DataLoader(Sequence):
     def __init__(self, list_IDs, labels, batch_size=32, dim=(84,84), n_channels=1, 
@@ -49,9 +49,10 @@ class DataLoader(Sequence):
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
             #X[i,] = np.load_(ID)
-            img = load_img(ID, grayscale=True)
+            img = load_img(ID, color_mode='grayscale')
             array = img_to_array(img)
-
+            # Normalization
+            array /= 255
             X[i,] = array
 
             # Store class
@@ -83,35 +84,44 @@ def load_bvp(session):
     return bvp
 
 
-def make_model():
+def make_model(input_shape):
     # for input shape 1, 84, 84
 
+    #input_shape = (84, 84, 1)
+    #input_shape = (1, 84, 84)
     model = Sequential()
 
-    model.add(Conv2D(32, (36, 36), input_shape=input_shape, activation='relu'))
+    model.add(Conv2D(32, (36, 36), padding='same', input_shape=input_shape, activation='relu'))
     model.add(Conv2D(32, (36, 36), activation='relu'))
-    model.add(MaxPooling2D())
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    #model.add(BatchNormalization())
 
+    model.add(Conv2D(64, (18, 18), padding='same', activation='relu'))
     model.add(Conv2D(64, (18, 18), activation='relu'))
-    model.add(Conv2D(64, (18, 18), activation='relu'))
-    model.add(MaxPooling2D())
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    #model.add(BatchNormalization())
 
 
-    model.add(Conv2D(64, (9, 9), activation='relu'))
-    model.add(Conv2D(64, (9, 9), activation='relu'))
-    model.add(Conv2D(64, (9, 9), activation='relu'))
+    model.add(Conv2D(64, (9, 9), padding='same', activation='relu'))
+    model.add(Conv2D(64, (9, 9), padding='same', activation='relu'))
+    model.add(Conv2D(64, (9, 9), padding='same', activation='relu'))
     model.add(MaxPooling2D())
+    #model.add(BatchNormalization())
 
     model.add(Flatten()) #Assumed
     
     model.add(Dense(128, activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(1, activation="sigmoid"))
+    #model.add(Dense(1, activation="sigmoid"))
+    model.add(Dense(1, activation="linear"))
+
+    print(model.summary)
 
     model.compile(
-    loss='binary_crossentropy',
-    optimizer="adam",
-    metrics=['accuracy']
+        #loss='binary_crossentropy',
+        loss='mean_squared_error',
+        optimizer="adam",
+        metrics=['accuracy']
     )
 
     return model
@@ -137,10 +147,11 @@ def make_test_model():
 
     return model
 
-def load_generators(bvp):
+def train_on_bvp(bvp, input_shape, model_id):
 
     params = {
-        'dim': (84,84,1),
+        #'dim': (84,84,1),
+        'dim': input_shape,
         'batch_size': 32,
         'n_classes': 1,
         'n_channels': 1,
@@ -185,21 +196,28 @@ def load_generators(bvp):
     validation_generator = DataLoader(partition['validation'], labels, **params)
 
     print('Making model')
-    model = make_test_model()
+    model = make_model(input_shape)
 
     print('Fitting model')
     model.fit_generator(generator=training_generator,
                         validation_data=validation_generator,
                         use_multiprocessing=True,
-                        workers=1)
+                        workers=1,
+                        )
 
+    model_string = 'models/'+model_id+'.h5'    
+    model.save(model_string)
 
 
 
 if __name__ == "__main__":
 
-    bvp = load_bvp(6)
-    load_generators(bvp)
+    input_shape = (84,84,1)
+    model_identifier = 'first_test'
+    participant = 6
+
+    bvp = load_bvp(participant)
+    train_on_bvp(bvp, input_shape, model_identifier)
 
 """
     # BVP values
