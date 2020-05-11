@@ -97,23 +97,11 @@ def synch_e4_by_pruning(e4_type, session_num):
         for value in matching_e4:
             f.write("%s\n" % value)
 
-<<<<<<< HEAD
 def synch_e4_with_session_time(e4_type, session_num):
-=======
-def synch_e4_with_padded(e4_type, session_num):
->>>>>>> 313952f3928b4c5686edce7d58feaddb886fb188
     session_number = str(session_num)
     session_path = './DATA/sessions/session' + session_number
     with open(session_path) as json_file:
         session = json.load(json_file)
-
-<<<<<<< HEAD
-=======
-    #
->>>>>>> 313952f3928b4c5686edce7d58feaddb886fb188
-    gap_info_path = './DATA/gap_info/gap_info'+session_number
-    with open(gap_info_path) as json_file:
-        gap_info = json.load(json_file)
 
     e4_path = './DATA/e4/'+session_number+'/'+e4_type+'.csv'
     e4 = []
@@ -127,25 +115,9 @@ def synch_e4_with_padded(e4_type, session_num):
 
     session_start = session['start_time']
     session_stop = session['stop_time']
-<<<<<<< HEAD
     
     timestep = 1 / e4_pr_sec
     j = 2
-=======
-
-
-    n_frames = len(session['obs'])
-    missing = gap_info['missing']
-    gap_indices = gap_info['indices']
-    n_gaps = len(gap_indices)
-    avg_gap = int(missing/n_gaps)
-    extra = missing % n_gaps
-    frame_pr_sek = 60
-    
-    timestep = 1 / e4_pr_sec
-    j = 2
-
->>>>>>> 313952f3928b4c5686edce7d58feaddb886fb188
     while e4_start < session_start-timestep/2:
         e4_start += timestep
         j +=1
@@ -161,7 +133,6 @@ def synch_e4_with_padded(e4_type, session_num):
     synched_e4 = []
     for i in range(j,k):
         synched_e4.append(e4[i])
-<<<<<<< HEAD
 
     #Save the synced e4 data
     dir_path = './DATA/e4_synchronized/'+session_number + '/'
@@ -173,8 +144,6 @@ def synch_e4_with_padded(e4_type, session_num):
             f.write("%s\n" % value)
     
     return synched_e4
-=======
->>>>>>> 313952f3928b4c5686edce7d58feaddb886fb188
         
 
 if __name__ == "__main__":
