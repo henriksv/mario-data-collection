@@ -1,8 +1,9 @@
 import json
 import csv
+import os
 
 
-def synch_e4(e4_type, session_num):
+def synch_e4_by_pruning(e4_type, session_num):
     session_number = str(session_num)
     session_path = './DATA/sessions/session' + session_number
     with open(session_path) as json_file:
@@ -18,8 +19,6 @@ def synch_e4(e4_type, session_num):
         rd = csv.reader(csvfile)
         for row in rd:
             e4.append(row)
-
-
   
     e4_pr_sec = float(e4[1][0])
     e4_start = float(e4[0][0])
@@ -98,9 +97,76 @@ def synch_e4(e4_type, session_num):
         for value in matching_e4:
             f.write("%s\n" % value)
 
+def synch_e4_with_session_time(e4_type, session_num):
+    session_number = str(session_num)
+    session_path = './DATA/sessions/session' + session_number
+    with open(session_path) as json_file:
+        session = json.load(json_file)
+
+    gap_info_path = './DATA/gap_info/gap_info'+session_number
+    with open(gap_info_path) as json_file:
+        gap_info = json.load(json_file)
+
+    e4_path = './DATA/e4/'+session_number+'/'+e4_type+'.csv'
+    e4 = []
+    with open(e4_path, newline='') as csvfile:
+        rd = csv.reader(csvfile)
+        for row in rd:
+            e4.append(row)
+
+    e4_pr_sec = float(e4[1][0])
+    e4_start = float(e4[0][0])
+
+    session_start = session['start_time']
+    session_stop = session['stop_time']
+    
+    timestep = 1 / e4_pr_sec
+    j = 2
+    while e4_start < session_start-timestep/2:
+        e4_start += timestep
+        j +=1
+
+    k = j
+    e4_end = e4_start
+
+    while e4_end < session_stop-timestep/2:
+        e4_end += timestep
+        k +=1
+
+
+    synched_e4 = []
+    for i in range(j,k):
+        synched_e4.append(e4[i])
+
+    #Save the synced e4 data
+    dir_path = './DATA/e4_synchronized/'+session_number + '/'
+    out_file_path = dir_path + e4_type+'.csv'
+    if not os.path.exists(dir_path):
+        os.mkdir(dir_path)
+    with open(out_file_path, "w") as f:
+        for value in synched_e4:
+            f.write("%s\n" % value)
+    
+    return synched_e4
+        
+
 if __name__ == "__main__":
-    synch_e4("EDA", 6)
+    e4_types = ['EDA', 'TEMP', 'HR', 'ACC', 'BVP']
+
+    for metric in e4_types:
+        vals = synch_e4_with_session_time(metric, 6)
+        print(metric + ' values: ' + str(len(vals)))
+        
+    """
+    vals = synch_e4_with_padded("EDA", 6)
+    vals = synch_e4_with_padded("TEMP", 6)
+    vals = synch_e4_with_padded("HR", 6)
+    vals = synch_e4_with_padded("ACC", 6)
+    vals = synch_e4_with_padded("ACC", 6)"""
+    
+    """ 
     synch_e4("TEMP", 6)
     synch_e4("HR", 6)
     synch_e4("ACC", 6)
     synch_e4("BVP", 6)
+    """
