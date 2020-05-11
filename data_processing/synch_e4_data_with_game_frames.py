@@ -151,22 +151,10 @@ def synch_e4_with_session_time(e4_type, session_num):
         
 
 if __name__ == "__main__":
+    #Example of sync with padded game frames for all supported datatypes for one session
     e4_types = ['EDA', 'TEMP', 'HR', 'ACC', 'BVP']
 
     for metric in e4_types:
         vals = synch_e4_with_session_time(metric, 6)
         print(metric + ' values: ' + str(len(vals)))
         
-    """
-    vals = synch_e4_with_padded("EDA", 6)
-    vals = synch_e4_with_padded("TEMP", 6)
-    vals = synch_e4_with_padded("HR", 6)
-    vals = synch_e4_with_padded("ACC", 6)
-    vals = synch_e4_with_padded("ACC", 6)"""
-    
-    """ 
-    synch_e4("TEMP", 6)
-    synch_e4("HR", 6)
-    synch_e4("ACC", 6)
-    synch_e4("BVP", 6)
-    """
