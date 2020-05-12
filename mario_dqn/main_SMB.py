@@ -29,12 +29,11 @@ def add_signal(signal, reward, weight):
 if __name__=='__main__':
    
    # fname_base = 'mario_DDQN-20_60-64_32-8-4_32-4-2_32-3-1_512'
-    fname_base = 'mario_DDQN_testingDQN3'
+    fname_base = 'mario_DDQN_testingDQN'#_g10k_m10k'
     output_dir = './' + fname_base
     fname_base = output_dir + '/' + fname_base
 
     if not os.path.exists(output_dir):
-        print('not')
         os.makedirs(output_dir)
     
     #dims = (240, 256, 3)
@@ -42,12 +41,12 @@ if __name__=='__main__':
     n_frames = 4
     img_rows, img_cols = dims[0], dims[1] #Downscaled
 
-    memory_size = 500
-    n_games = 100
-    plot_check = 10
-    model_save = 10
-    print_check = 5
-    episodes_save_check = 10
+    memory_size = 10000
+    n_games = 10000
+    plot_check = 100
+    model_save = 500
+    print_check = 100
+    episodes_save_check = 100
 
     fname_eval = fname_base + '_eval.h5'
     fname_next = fname_base + '_next.h5'
@@ -117,7 +116,7 @@ if __name__=='__main__':
 
         epsilon_history.append(agent.epsilon)
         scores.append(score)
-        success_history.append(success)
+        success_history.append(int(success))
         pos_history.append(int(position))
         time_history.append(time)
         progression_rate = position / time

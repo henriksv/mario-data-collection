@@ -92,19 +92,19 @@ def make_model(input_shape):
     model = Sequential()
 
     model.add(Conv2D(32, (36, 36), padding='same', input_shape=input_shape, activation='relu'))
-    model.add(Conv2D(32, (36, 36), activation='relu'))
+    #model.add(Conv2D(32, (36, 36), activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     #model.add(BatchNormalization())
 
     model.add(Conv2D(64, (18, 18), padding='same', activation='relu'))
-    model.add(Conv2D(64, (18, 18), activation='relu'))
+    #model.add(Conv2D(64, (18, 18), activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     #model.add(BatchNormalization())
 
 
     model.add(Conv2D(64, (9, 9), padding='same', activation='relu'))
-    model.add(Conv2D(64, (9, 9), padding='same', activation='relu'))
-    model.add(Conv2D(64, (9, 9), padding='same', activation='relu'))
+    #model.add(Conv2D(64, (9, 9), padding='same', activation='relu'))
+    #model.add(Conv2D(64, (9, 9), padding='same', activation='relu'))
     model.add(MaxPooling2D())
     #model.add(BatchNormalization())
 
@@ -121,7 +121,7 @@ def make_model(input_shape):
         #loss='binary_crossentropy',
         loss='mean_squared_error',
         optimizer="adam",
-        metrics=['accuracy']
+        metrics=['mse', 'mae',]
     )
 
     return model
@@ -167,7 +167,7 @@ def train_on_bvp(bvp, input_shape, model_id):
      # BVP values
     labels = {}
     for i in range(file_count):
-        frame_path = x_path + 'state' + str(i+1) + '.png'
+        frame_path = x_path + 'state' + str(i) + '.png'
         frame_IDs.append(frame_path)
         labels[frame_path] = bvp[i]
 
@@ -203,6 +203,7 @@ def train_on_bvp(bvp, input_shape, model_id):
                         validation_data=validation_generator,
                         use_multiprocessing=True,
                         workers=1,
+                        epochs=1,
                         )
 
     model_string = 'models/'+model_id+'.h5'    
