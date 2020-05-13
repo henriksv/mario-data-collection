@@ -6,6 +6,7 @@ import gym
 import json
 from pyglet import clock
 import time
+import sys
 
 import numpy as np
 import cv2
@@ -205,4 +206,14 @@ def capture_recording_with_padding(session_number, downscale_game=False, downsca
 
 if __name__ == "__main__":
     #Example use with game and video downscaling and grayscaling using default dimensions
-    capture_recording_with_padding(6, downscale_game=True, downscale_video=True, grayscale_game=True, grayscale_video=True)
+    if len(sys.argv) > 1:
+        for i in range(1, len(sys.argv)):    
+            session_n = argv[1]
+            if session_n not in ['0','1','2','3','4','5','6','7','8','9']:
+                print('Invalid session! ' + session_n + ' is not a valid session number.')
+                return
+            else:
+                print('Capturing recording from session ' + session_n)
+                capture_recording_with_padding(session_n, downscale_game=True, downscale_video=True, grayscale_game=True, grayscale_video=True)
+    else:
+        print('No session specified. Provide session number(s) to extract.')
