@@ -29,7 +29,7 @@ def add_signal(signal, reward, weight):
 if __name__=='__main__':
    
    # fname_base = 'mario_DDQN-20_60-64_32-8-4_32-4-2_32-3-1_512'
-    fname_base = 'mario_DDQN_testingDQN'#_g10k_m10k'
+    fname_base = 'mario_DDQN_testingDQN_g10k_m10k'
     output_dir = './' + fname_base
     fname_base = output_dir + '/' + fname_base
 
@@ -45,7 +45,7 @@ if __name__=='__main__':
     n_games = 10000
     plot_check = 100
     model_save = 500
-    print_check = 100
+    print_check = 10
     episodes_save_check = 100
 
     fname_eval = fname_base + '_eval.h5'
@@ -74,7 +74,7 @@ if __name__=='__main__':
     progression_history = []
 
     
-    i = 0
+    #i = 0
     for i in range(n_games):
     #while(True):
         done = False
@@ -103,9 +103,7 @@ if __name__=='__main__':
             agent.learn()
             
     
-
-
-        success = info['flag_get']
+        success = int(info['flag_get'])
         position = info['x_pos']
         time = 400 - info['time']
         
@@ -144,7 +142,7 @@ if __name__=='__main__':
             print('score            %.2f' % score, '     average score %.2f' % avg_score)
             print('time             %.2f' % (400 - info['time']) ,'       average time %.2f' % avg_time)
             print('distance         %.2f' % info['x_pos'] , '     average distance %.2f' % avg_dist)
-            print('success          %.2f' % info['flag_get'] ,  '        average success %.2f' % avg_success)
+            print('success          %.2f' % success,  '        average success %.2f' % avg_success)
             print('progression_rate %.2f' % progression_rate, '       avg_progression %.2f' % avg_progression)
             
         if i % episodes_save_check:

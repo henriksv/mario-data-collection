@@ -60,22 +60,28 @@ def capture_recording_with_padding(session_number, downscale_game=False, downsca
     print('VS:' + str(video_start))
     print('GS:' + str(game_start))"""
 
-    skipped_frames = 0
-    while video_start < game_start:
+    skipped_video_frames = 0
+    extra_game_frames = 0
+    while video_start + (video_frame_length/2) < game_start:
         ret, frame = cap.read()
         video_start += video_frame_length
-        skipped_frames += 1
+        skipped_video_frames += 1
 
-    """print('Skipped: ' + str(skipped_frames))
-    print('VS:' + str(video_start))
-    print('GS:' + str(game_start))"""
+        if skipped_video_frames > 30:
+            extra_game_frames +=2
 
+    print('Skipped video frames: ' + str(skipped_video_frames))
+    print('Extra game frames: ' + str(extra_game_frames))
+    print('Video Start:' + str(video_start))
+    print('Game Start:' + str(game_start))
+    
     is_first = True
     no = 0
     finish = False
     steps = 0
     total_steps = 0
     gap_indices = []
+    n_actions = len(data['obs'])
 
 
     print('...extracting game frames...')
@@ -83,8 +89,10 @@ def capture_recording_with_padding(session_number, downscale_game=False, downsca
     if not os.path.exists(frame_dir_path):
         os.mkdir(frame_dir_path)
 
-    for action in data['obs']:  
-        env.render()
+    for action in data['obs']:
+        if total_steps == n_actions-extra_game_frames:
+            break
+        #env.render()
         next_state, reward, done, info = env.step(action)
         steps += 1
         total_steps += 1
@@ -124,27 +132,26 @@ def capture_recording_with_padding(session_number, downscale_game=False, downsca
         
     #Extract video
     n_gaps = len(gap_indices)
-    n_actions = len(data['obs'])
     missing = 126000 - n_actions
     video_frames_to_skip = missing/2
     avg_gap_len = int(video_frames_to_skip / n_gaps)
     extra = video_frames_to_skip % n_gaps
     
-    """
-    print('..gap info...')
-    print('N gaps:'+str(n_gaps))
-    print('Frames to skip: '+ str(video_frames_to_skip))
-    print('gap len: ' + str(avg_gap_len))
-    print('extra: ' + str(extra))
-    """
+    
+    #print('..gap info...')
+    #print('N gaps:'+str(n_gaps))
+    #print('Frames to skip: '+ str(video_frames_to_skip))
+    #print('gap len: ' + str(avg_gap_len))
+    #print('extra: ' + str(extra))
+    
 
-    def write_video_frame(index):
+    def write_video_frame(index, dir_path):
         ret, frame = cap.read()
         if grayscale_video:
             frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
         if downscale_video:
             frame = cv2.resize(frame, (downscale_video_dim, downscale_video_dim), interpolation=cv2.INTER_AREA)
-        cv2.imwrite("./DATA/video_frames/"+session_number+"/image" + str(index) + ".png", frame)
+        cv2.imwrite(dir_path+"/image" + str(index) + ".png", frame)
 
     def write_new_game_frame(index):
         if downscale_game:
@@ -161,15 +168,18 @@ def capture_recording_with_padding(session_number, downscale_game=False, downsca
 
     first = True
     print('...extracting video and padding game frames...')
-    image_dir_path = "./DATA/video_frames/"+session_number
+    image_path = "./DATA/video_frames/"
+    image_dir_path = image_path+session_number
+    if not os.path.exists(image_path):
+        os.mkdir(image_path)
     if not os.path.exists(image_dir_path):
         os.mkdir(image_dir_path)
-    for i in range(n_actions):    
+    for i in range(n_actions-extra_game_frames):    
         if first:
             first = False
         else:
             first = True
-            write_video_frame(k)
+            write_video_frame(k, image_dir_path)
             frame_path = "./DATA/game_frames/"+session_number+"/state" + str(no) + ".png"
             new_frame_path = "./DATA/game_frames/"+session_number+"/frame" + str(k) + ".png"
             os.rename(frame_path,new_frame_path)
@@ -179,13 +189,13 @@ def capture_recording_with_padding(session_number, downscale_game=False, downsca
         if i in gap_indices:
             skips += 1
             for j in range(int(avg_gap_len)):            
-                write_video_frame(k)
+                write_video_frame(k, image_dir_path)
                 write_new_game_frame(k)
                 k+=1
 
             if extra > 0:
                 write_new_game_frame(k)
-                write_video_frame(k)
+                write_video_frame(k, image_dir_path)
                 extra -= 1
                 k+=1
         
@@ -203,17 +213,16 @@ def capture_recording_with_padding(session_number, downscale_game=False, downsca
         json.dump(gap_info, outfile)
     print('...data capture complete...')
 
-
+    
 if __name__ == "__main__":
     #Example use with game and video downscaling and grayscaling using default dimensions
     if len(sys.argv) > 1:
         for i in range(1, len(sys.argv)):    
-            session_n = argv[1]
+            session_n = sys.argv[i]
             if session_n not in ['0','1','2','3','4','5','6','7','8','9']:
                 print('Invalid session! ' + session_n + ' is not a valid session number.')
-                return
             else:
-                print('Capturing recording from session ' + session_n)
+                print('Capturing data from session ' + session_n)
                 capture_recording_with_padding(session_n, downscale_game=True, downscale_video=True, grayscale_game=True, grayscale_video=True)
     else:
         print('No session specified. Provide session number(s) to extract.')
