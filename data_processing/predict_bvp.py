@@ -1,6 +1,4 @@
 
-#from keras.models import Sequential
-#from keras.layers import Dense, Dropout, Flatten,  Conv2D, MaxPooling2D
 import cv2
 import os
 import csv
@@ -13,6 +11,8 @@ import random
 from keras.preprocessing.image import load_img
 from keras.preprocessing.image import img_to_array
 from keras.preprocessing.image import array_to_img
+from keras.callbacks import ModelCheckpoint, EarlyStopping
+from keras.metrics import RootMeanSquaredError
 
 import numpy as np
 from tensorflow.keras.utils import Sequence
@@ -85,26 +85,25 @@ def load_bvp(session):
 
 
 def make_model(input_shape):
-    # for input shape 1, 84, 84
-
+   
     #input_shape = (84, 84, 1)
     #input_shape = (1, 84, 84)
     model = Sequential()
 
-    model.add(Conv2D(32, (36, 36), padding='same', input_shape=input_shape, activation='relu'))
-    #model.add(Conv2D(32, (36, 36), activation='relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Conv2D(32, (3, 3), padding='same', input_shape=input_shape, activation='relu'))
+    model.add(Conv2D(32, (3, 3), activation='relu'))
+    model.add(MaxPooling2D())
     #model.add(BatchNormalization())
 
-    model.add(Conv2D(64, (18, 18), padding='same', activation='relu'))
-    #model.add(Conv2D(64, (18, 18), activation='relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Conv2D(64, (3, 3), padding='same', activation='relu'))
+    model.add(Conv2D(64, (3, 3), activation='relu'))
+    model.add(MaxPooling2D())
     #model.add(BatchNormalization())
 
 
-    model.add(Conv2D(64, (9, 9), padding='same', activation='relu'))
-    #model.add(Conv2D(64, (9, 9), padding='same', activation='relu'))
-    #model.add(Conv2D(64, (9, 9), padding='same', activation='relu'))
+    model.add(Conv2D(64, (3, 3), padding='same', activation='relu'))
+    model.add(Conv2D(64, (3, 3), padding='same', activation='relu'))
+    model.add(Conv2D(64, (3, 3), padding='same', activation='relu'))
     model.add(MaxPooling2D())
     #model.add(BatchNormalization())
 
@@ -121,28 +120,7 @@ def make_model(input_shape):
         #loss='binary_crossentropy',
         loss='mean_squared_error',
         optimizer="adam",
-        metrics=['mse', 'mae',]
-    )
-
-    return model
-
-def make_test_model():
-    input_shape = (84, 84, 1)
-
-    model = Sequential()
-
-    model.add(Conv2D(32, (36, 36), input_shape=input_shape, activation='relu'))
-    model.add(MaxPooling2D())
-    model.add(Flatten()) #Assumed
-    
-    model.add(Dense(128, activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(1, activation="sigmoid"))
-
-    model.compile(
-    loss='binary_crossentropy',
-    optimizer="adam",
-    metrics=['accuracy']
+        metrics=['mse', 'mae', RootMeanSquaredError()]
     )
 
     return model
@@ -164,49 +142,94 @@ def train_on_bvp(bvp, input_shape, model_id):
     #frame_IDs = list(glob.glob((x_path + "*")))
     frame_IDs = []
 
+    
+    train = []
+    validation = []
+    
      # BVP values
     labels = {}
+    
     for i in range(file_count):
-        frame_path = x_path + 'state' + str(i) + '.png'
+        frame_path = x_path + 'frame' + str(i) + '.png'
         frame_IDs.append(frame_path)
         labels[frame_path] = bvp[i]
 
+    # Every forth minute for validation
+    min = 1
+    time = 0
+    val = False
+    for i, id in enumerate(frame_IDs):
+        if time == 1800:
+            min += 1
+            if min % 4 == 0:
+                val = True
+            else:
+                val = False
+            time = 0
+        if val:
+            validation.append(id)
+        else:
+            train.append(id)
+        time += 1
+    """
+    for i, id in enumerate(frame_IDs):
+        if i % 3 == 0:
+            validation.append(id)
+        else:
+            train.append(id)
+    """
+    random.shuffle(train)
+    random.shuffle(validation)
+    """
     random.shuffle(frame_IDs)
-
-    partition = {
-        'train' : [],
-        'validation' : []
-    }
-
     length = len(frame_IDs)
     split = int((length / 4) * 3)
 
     partition['train'] = frame_IDs[0:split]
-    partition['validation'] = frame_IDs[split:length]
+    partition['validation'] = frame_IDs[split:length]"""
 
-
-
-    print(len(partition['train']))
-    print(len(partition['validation']))
+    print(len(train))
+    print(len(validation))
 
 
     # Generators
     print('Making generators')
-    training_generator = DataLoader(partition['train'], labels, **params)
-    validation_generator = DataLoader(partition['validation'], labels, **params)
+    training_generator = DataLoader(train, labels, **params)
+    validation_generator = DataLoader(validation, labels, **params)
 
     print('Making model')
     model = make_model(input_shape)
 
+    # Callbacks
+    checkpoint_filepath = 'models/'+ model_id + '_checkpoint.h5'
+    model_checkpoint_callback = ModelCheckpoint(
+        filepath=checkpoint_filepath,
+        save_weights_only=False,
+        monitor='val_loss',
+        mode='auto',
+        save_best_only=True
+        )
+
+    early_stopping_callback = EarlyStopping(
+        monitor="val_loss",
+        min_delta=0,
+        patience=15,
+        verbose=0,
+        mode="auto",
+        baseline=None,
+        restore_best_weights=False
+    )
+
     print('Fitting model')
     model.fit_generator(generator=training_generator,
                         validation_data=validation_generator,
-                        use_multiprocessing=True,
+                        use_multiprocessing=False,
                         workers=1,
-                        epochs=1,
+                        epochs=1000,
+                        callbacks=[model_checkpoint_callback, early_stopping_callback],
                         )
 
-    model_string = 'models/'+model_id+'.h5'    
+    model_string = 'models/'+'fin_'+model_id+'.h5'    
     model.save(model_string)
 
 
@@ -214,42 +237,8 @@ def train_on_bvp(bvp, input_shape, model_id):
 if __name__ == "__main__":
 
     input_shape = (84,84,1)
-    model_identifier = 'first_test'
+    model_identifier = 'v2-p6'
     participant = 6
 
     bvp = load_bvp(participant)
     train_on_bvp(bvp, input_shape, model_identifier)
-
-"""
-    # BVP values
-    labels = {}
-
-
-    # Datasets
-    partition = # IDs
-    labels = # Labels
-
-    # Generators
-    training_generator = DataGenerator(partition['train'], labels, **params)
-    validation_generator = DataGenerator(partition['validation'], labels, **params)
-
-    # Design model
-    model = Sequential()
-    [...] # Architecture
-    model.compile()
-
-    # Train model on dataset
-    model.fit_generator(generator=training_generator,
-                        validation_data=validation_generator,
-                        use_multiprocessing=True,
-                        workers=6)
-
-
-    #def train():
-
-    #load_frames()
-    #bvp = load_bvp(6)
-    #frames, n_frames = load_frames(len(bvp))
-
-    #frames, n_frames = load_frames(62597)
-"""
