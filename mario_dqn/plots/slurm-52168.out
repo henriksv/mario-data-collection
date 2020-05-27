@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/work/henriksv/code/mario-data-collection/mario_dqn/plots/compare_multiple.py", line 83, in <module>
+    if len(paths == 3):
+TypeError: object of type 'bool' has no len()
+srun: error: g001: task 0: Exited with exit code 1

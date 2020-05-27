@@ -23,7 +23,7 @@ path5 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_m100k_lr
 paths = [path1, path2, path3, path4, path5]
 #paths = [path1, path2, path3]
 
-legends = ['LR:0.00001', 'LR:0.00005', 'LR:0.0001', 'LR:0.00025', 'LR:0.001']
+legends = ['Agent 1: LR:0.00001', 'Agent 2: LR:0.00005', 'Agent 3: LR:0.0001', 'Agent 4: LR:0.00025', 'Agent 5: LR:0.001']
 #legends = ['LR:0.00001', 'LR:0.00005', 'LR:0.0001']
 
 
@@ -34,10 +34,10 @@ legends = ['LR:0.00001', 'LR:0.00005', 'LR:0.0001', 'LR:0.00025', 'LR:0.001']
 
 #paths = [path1, path2]#, path5, path4, path5]
 
-limit = 10000
+limit = 40000
 avg_n=500
-metric = 'scores'
-label = 'Avg Score (pr. 500 eps)'
+metric = 'success'
+label = 'Finish Rate (pr. 500 eps)'
 out_path = 'CompareMult_'+metric+'_10k_lr.png'
 
 data = []
@@ -80,7 +80,11 @@ ax.set_ylabel(label, color="C0")
 ax.tick_params(axis='x', colors="C0")
 ax.tick_params(axis='y', colors="C0")
 
-ax. legend(loc='upper left')#, frameon=False)
+if len(paths) == 3:
+    ax.legend(loc='lower right')#, frameon=False)
+else:
+    ax.legend(loc='upper left')#, frameon=False)
+
 
 plt.savefig(out_path)
 plt.close()
