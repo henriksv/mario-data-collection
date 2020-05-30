@@ -3,7 +3,7 @@ import numpy as np
 import gym
 import json
 
-def compare(paths, legends, metric, label, test, limit=10000, avg_n=500):
+def compare(paths, legends, metric, label, test, limit=10000, avg_n=500, leg_pos='high'):
 
     out_path = 'CompareMult_'+metric+'_'+str(limit)+'_'+test+'.png'
     if avg_n != 500:    
@@ -50,7 +50,7 @@ def compare(paths, legends, metric, label, test, limit=10000, avg_n=500):
     ax.tick_params(axis='x', colors="C0")
     ax.tick_params(axis='y', colors="C0")
 
-    if len(paths) == 3:
+    if leg_pos == 'low':
         ax.legend(loc='lower right')#, frameon=False)
     else:
         ax.legend(loc='upper left')#, frameon=False)
@@ -73,7 +73,7 @@ path3 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_m100k_lr
 path4 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_m100k_ed0.99995-2/mario_DDQN_m100k_ed0.99995-2_episodes.json'
 #m100k_lr0.001_ed0.99995 - 14k
 path5 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_m100k_lr0.001_ed0.99995/mario_DDQN_m100k_lr0.001_ed0.99995_episodes.json'
-
+"""
 paths = [path1, path2, path3, path4, path5]
 legends = ['Agent 1: LR:0.00001', 'Agent 2: LR:0.00005', 'Agent 3: LR:0.0001', 'Agent 4: LR:0.00025', 'Agent 5: LR:0.001']
 label = 'Finish Rate (pr. 500 eps)'
@@ -88,16 +88,17 @@ label = 'Average Score (pr. 1000 eps)'
 compare(paths, legends, 'scores', label,test, 10000, 1000)
 
 paths = [path1, path2, path3]
+leg_pos = 'low'
 legends = ['Agent 1: LR:0.00001', 'Agent 2: LR:0.00005', 'Agent 3: LR:0.0001', 'Agent 4: LR:0.00025', 'Agent 5: LR:0.001']
 label = 'Finish Rate (pr. 500 eps)'
-compare(paths, legends, 'success', label,test, 40000)
+compare(paths, legends, 'success', label,test, 40000, leg_pos)
 label = 'Finish Rate (pr. 1000 eps)'
-compare(paths, legends, 'success', label,test, 40000, 1000)
+compare(paths, legends, 'success', label,test, 40000, 1000, leg_pos)
 
 label = 'Average Score (pr. 500 eps)'
-compare(paths, legends, 'scores', label,test, 40000)
+compare(paths, legends, 'scores', label,test, 40000, leg_pos)
 label = 'Average Score (pr. 1000 eps)'
-compare(paths, legends, 'scores', label,test, 40000, 1000)
+compare(paths, legends, 'scores', label,test, 40000, 1000, leg_pos)"""
 
 #Compare memory
 
@@ -107,7 +108,13 @@ path6 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_m50k_lr0
 path7 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_m250k_lr0.00005/mario_DDQN_m250k_lr0.00005_episodes.json'
 #m500k
 path8 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_m500k_lr0.00005/mario_DDQN_m500k_lr0.00005_episodes.json'
+#m10k
+path9 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_m10k_lr0.00005/mario_DDQN_m10k_lr0.00005_episodes.json'
+#m25k
+path10 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_m25k_lr0.00005/mario_DDQN_m25k_lr0.00005_episodes.json'
+
 test = 'mem'
+"""
 paths = [path6, path2, path7, path8]
 legends = ['Agent 1: Mem:50k', 'Agent 2: Mem:100k', 'Agent 3: Mem:250k', 'Agent 4: Mem:500k']
 
@@ -119,8 +126,22 @@ compare(paths, legends, 'success', label,test, 17000, 1000)
 label = 'Average Score (pr. 500 eps)'
 compare(paths, legends, 'scores', label,test, 17000)
 label = 'Average Score (pr. 1000 eps)'
-compare(paths, legends, 'scores', label,test, 17000, 1000)
+compare(paths, legends, 'scores', label,test, 17000, 1000)"""
 
+paths = [path9, path10, path6, path2, path7, path8]
+legends = ['Agent 1: Mem:10k', 'Agent 2: Mem:25k', 'Agent 3: Mem:50k', 'Agent 4: Mem:100k', 'Agent 5: Mem:250k', 'Agent 6: Mem:500k']
+
+n = 17000
+pos = 'low'
+label = 'Finish Rate (pr. 500 eps)'
+compare(paths, legends, 'success', label,test, n, leg_pos=pos)
+label = 'Finish Rate (pr. 1000 eps)'
+compare(paths, legends, 'success', label,test, n, 1000, leg_pos=pos)
+
+label = 'Average Score (pr. 500 eps)'
+compare(paths, legends, 'scores', label,test, n, leg_pos=pos)
+label = 'Average Score (pr. 1000 eps)'
+compare(paths, legends, 'scores', label,test, n, 1000, leg_pos=pos)
 
 
 
