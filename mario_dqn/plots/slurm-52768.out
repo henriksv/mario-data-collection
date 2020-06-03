@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "/work/henriksv/code/mario-data-collection/mario_dqn/plots/compare_multiple.py", line 137, in <module>
-    compare(paths, legends, 'success', label,test, n, leg_pos)
-  File "/work/henriksv/code/mario-data-collection/mario_dqn/plots/compare_multiple.py", line 37, in compare
-    running_avg[t] = np.mean(v[max(0, t-avg_n):(t+1)])
-TypeError: unsupported operand type(s) for -: 'int' and 'str'
-srun: error: g001: task 0: Exited with exit code 1

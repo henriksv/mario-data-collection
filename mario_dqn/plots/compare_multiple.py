@@ -127,7 +127,7 @@ label = 'Average Score (pr. 500 eps)'
 compare(paths, legends, 'scores', label,test, 17000)
 label = 'Average Score (pr. 1000 eps)'
 compare(paths, legends, 'scores', label,test, 17000, 1000)"""
-
+"""
 paths = [path9, path10, path6, path2, path7, path8]
 legends = ['Agent 1: Mem:10k', 'Agent 2: Mem:25k', 'Agent 3: Mem:50k', 'Agent 4: Mem:100k', 'Agent 5: Mem:250k', 'Agent 6: Mem:500k']
 
@@ -142,7 +142,46 @@ label = 'Average Score (pr. 500 eps)'
 compare(paths, legends, 'scores', label,test, n, leg_pos=pos)
 label = 'Average Score (pr. 1000 eps)'
 compare(paths, legends, 'scores', label,test, n, 1000, leg_pos=pos)
+"""
 
+test = 'qlty'
+
+path11 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_up60_m25k_lr0.00005/mario_DDQN_up60_m25k_lr0.00005_episodes.json'
+path12 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_up120_m25k_lr0.00005/mario_DDQN_up120_m25k_lr0.00005_episodes.json'
+"""
+paths = [path11, path10, path12]
+legends = ['Agent 1: 60x60', 'Agent 2: 84x84', 'Agent 3: 120x120']
+
+n = 15000
+pos = 'low'
+label = 'Finish Rate (pr. 500 eps)'
+compare(paths, legends, 'success', label,test, n, leg_pos=pos)
+label = 'Finish Rate (pr. 1000 eps)'
+compare(paths, legends, 'success', label,test, n, 1000, leg_pos=pos)
+
+label = 'Average Score (pr. 500 eps)'
+compare(paths, legends, 'scores', label,test, n, leg_pos=pos)
+label = 'Average Score (pr. 1000 eps)'
+compare(paths, legends, 'scores', label,test, n, 1000, leg_pos=pos)"""
+
+test = 'emo'
+
+path13 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p0_0.5/mario_EDDQN_p0_0.5_episodes.json'
+
+paths = [path9, path11, path13]
+legends = ['Agent 1: vanilla', 'Agent 2: p6 weight: 0.5', 'Agent 3: p0 weight: 0.5']
+
+n = 5000
+pos = 'high'
+label = 'Finish Rate (pr. 500 eps)'
+compare(paths, legends, 'success', label,test, n, leg_pos=pos)
+label = 'Finish Rate (pr. 1000 eps)'
+compare(paths, legends, 'success', label,test, n, 1000, leg_pos=pos)
+
+label = 'Average Score (pr. 500 eps)'
+compare(paths, legends, 'scores', label,test, n, leg_pos=pos)
+label = 'Average Score (pr. 1000 eps)'
+compare(paths, legends, 'scores', label,test, n, 1000, leg_pos=pos)
 
 
 
