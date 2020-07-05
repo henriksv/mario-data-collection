@@ -3,11 +3,11 @@ import numpy as np
 import gym
 import json
 
-def compare(paths, legends, metric, label, test, limit=10000, avg_n=500, leg_pos='high'):
+def compare(paths, legends, metric, label, test, limit=10000, avg_n=500, leg_pos='high', tail=""):
 
     out_path = 'CompareMult_'+metric+'_'+str(limit)+'_'+test+'.png'
     if avg_n != 500:    
-        out_path = 'CompareMult_avg' + str(avg_n )+'_'+ metric+'_'+str(limit)+'_'+test+'.png'
+        out_path = 'CompareMult_avg' + str(avg_n )+'_'+ metric+'_'+str(limit)+'_'+ test + tail + '.png'
     
 
     data = []
@@ -18,6 +18,9 @@ def compare(paths, legends, metric, label, test, limit=10000, avg_n=500, leg_pos
     vals = []
     for d in data:
         vals.append(d[metric][0:limit])
+
+    for v in vals:
+        print(len(v))
 
     i = 0
     x = [i+1 for i in range(0, limit)]#len(vals))]
@@ -63,7 +66,7 @@ def compare(paths, legends, metric, label, test, limit=10000, avg_n=500, leg_pos
 
 # Orange, green, red, purple
 
-#m100k_lr0.00001_ed0.99995 - 30k -running
+"""#m100k_lr0.00001_ed0.99995 - 30k -running
 path1 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_m100k_lr0.00001_ed0.99995-2/mario_DDQN_m100k_lr0.00001_ed0.99995-2_episodes.json'
 #m100k_lr0.00005_ed0.99995 - 40k
 path2 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_m100k_lr0.00005_ed0.99995-2/mario_DDQN_m100k_lr0.00005_ed0.99995-2_episodes.json'
@@ -73,7 +76,7 @@ path3 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_m100k_lr
 path4 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_m100k_ed0.99995-2/mario_DDQN_m100k_ed0.99995-2_episodes.json'
 #m100k_lr0.001_ed0.99995 - 14k
 path5 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_m100k_lr0.001_ed0.99995/mario_DDQN_m100k_lr0.001_ed0.99995_episodes.json'
-"""
+""""""
 paths = [path1, path2, path3, path4, path5]
 legends = ['Agent 1: LR:0.00001', 'Agent 2: LR:0.00005', 'Agent 3: LR:0.0001', 'Agent 4: LR:0.00025', 'Agent 5: LR:0.001']
 label = 'Finish Rate (pr. 500 eps)'
@@ -101,7 +104,7 @@ label = 'Average Score (pr. 1000 eps)'
 compare(paths, legends, 'scores', label,test, 40000, 1000, leg_pos)"""
 
 #Compare memory
-
+"""
 #m50k_lr0.00005
 path6 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_m50k_lr0.00005/mario_DDQN_m50k_lr0.00005_episodes.json'
 #m250k_lr0.00005
@@ -113,7 +116,7 @@ path9 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_m10k_lr0
 #m25k
 path10 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_m25k_lr0.00005/mario_DDQN_m25k_lr0.00005_episodes.json'
 
-test = 'mem'
+test = 'mem'"""
 """
 paths = [path6, path2, path7, path8]
 legends = ['Agent 1: Mem:50k', 'Agent 2: Mem:100k', 'Agent 3: Mem:250k', 'Agent 4: Mem:500k']
@@ -144,11 +147,11 @@ label = 'Average Score (pr. 1000 eps)'
 compare(paths, legends, 'scores', label,test, n, 1000, leg_pos=pos)
 """
 
-test = 'qlty'
+"""test = 'qlty'
 
 path11 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_up60_m25k_lr0.00005/mario_DDQN_up60_m25k_lr0.00005_episodes.json'
 path12 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_up120_m25k_lr0.00005/mario_DDQN_up120_m25k_lr0.00005_episodes.json'
-"""
+""""""
 paths = [path11, path10, path12]
 legends = ['Agent 1: 60x60', 'Agent 2: 84x84', 'Agent 3: 120x120']
 
@@ -165,13 +168,106 @@ label = 'Average Score (pr. 1000 eps)'
 compare(paths, legends, 'scores', label,test, n, 1000, leg_pos=pos)"""
 
 test = 'emo'
+pathX = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_DDQN_m10k_lr0.00005/mario_DDQN_m10k_lr0.00005_episodes.json'
 
-path13 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p0_0.5/mario_EDDQN_p0_0.5_episodes.json'
+path0 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p0_0.5/mario_EDDQN_p0_0.5_episodes.json'
+path1 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p1_0.5_v4/mario_EDDQN_p1_0.5_v4_episodes.json'
+path2 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p2_0.5/mario_EDDQN_p2_0.5_episodes.json'
+path3 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p3_0.5_v4/mario_EDDQN_p3_0.5_v4_episodes.json'
+path4 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p4_0.5/mario_EDDQN_p4_0.5_episodes.json'
+path5 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p5_0.5_v3/mario_EDDQN_p5_0.5_v3_episodes.json'
+path6 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p6_0.5/mario_EDDQN_p6_0.5_episodes.json'
+path7 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p7_0.5_v4/mario_EDDQN_p7_0.5_v4_episodes.json'
+path8 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p8_0.5/mario_EDDQN_p8_0.5_episodes.json'
+path9 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p9_0.5/mario_EDDQN_p9_0.5_episodes.json'
 
-paths = [path9, path11, path13]
-legends = ['Agent 1: vanilla', 'Agent 2: p6 weight: 0.5', 'Agent 3: p0 weight: 0.5']
+# Best
+paths = [
+    pathX, 
+    path0, #17000
+    path1, #10000
+    #path2, #10000
+    #path3, #10000
+    #path4, #10000
+    #path5, #17000
+    path6, #17000
+    path7, 
+    #path8, #11000
+    path9  #10000
+    ]
 
-n = 5000
+n = 10000
+legends = [
+    'Agent X: vanilla', 
+    'Agent 0: p0 ',
+    'Agent 1: p1 ', 
+    'Agent 6: p6 ', 
+    'Agent 7: p7 ', 
+    'Agent 9: p9 '
+    ]
+
+tail = "-BEST"
+pos = 'low'
+label = 'Finish Rate (pr. 1000 eps)'
+compare(paths, legends, 'success', label,test, n, 1000, leg_pos=pos, tail=tail)
+
+label = 'Average Score (pr. 1000 eps)'
+compare(paths, legends, 'scores', label,test, n, 1000, leg_pos=pos, tail=tail)
+
+#Worst
+paths = [
+    pathX, 
+    path2, #10000
+    path3, #10000
+    path4, #10000
+    path5, #17000
+    path8, #11000
+    ]
+
+n = 10000
+legends = [
+    'Agent X: vanilla', 
+    'Agent 2: p2 ', 
+    'Agent 3: p3 ', 
+    'Agent 4: p4 ', 
+    'Agent 5: p5 ', 
+    'Agent 8: p8 ', 
+    ]
+
+tail = "-WORST"
+
+pos = 'low'
+label = 'Finish Rate (pr. 1000 eps)'
+compare(paths, legends, 'success', label,test, n, 1000, leg_pos=pos, tail=tail)
+
+label = 'Average Score (pr. 1000 eps)'
+compare(paths, legends, 'scores', label,test, n, 1000, leg_pos=pos, tail=tail)
+
+
+"""path01 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p0_0.25/mario_EDDQN_p0_0.25_episodes.json'
+path02 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p0_0.75/mario_EDDQN_p0_0.75_episodes.json'
+
+path61 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p6_0.25/mario_EDDQN_p6_0.25_episodes.json'
+path62 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p6_0.75/mario_EDDQN_p6_0.75_episodes.json'
+
+
+paths = [
+    pathX, 
+    path01,
+    path0,  
+    path02,
+    ]
+
+
+test = 'weight_p0'
+n = 15000
+legends = [
+    'Agent X: vanilla', 
+    'Agent 0: p0 - weight=0.25 ',
+    'Agent 1: p0 - weight=0.5 ', 
+    'Agent 2: p0 - weight=0.75 '
+    ]
+
 pos = 'high'
 label = 'Finish Rate (pr. 500 eps)'
 compare(paths, legends, 'success', label,test, n, leg_pos=pos)
@@ -183,8 +279,33 @@ compare(paths, legends, 'scores', label,test, n, leg_pos=pos)
 label = 'Average Score (pr. 1000 eps)'
 compare(paths, legends, 'scores', label,test, n, 1000, leg_pos=pos)
 
+paths = [
+    pathX, 
+    path61, 
+    path6,  
+    #path62
+    ]
 
 
+test = 'weight_p6'
+n = 15000
+legends = [
+    'Agent X: vanilla', 
+    'Agent 3: p6 - weight=0.25 ', 
+    'Agent 4: p6 - weight=0.5 ', 
+    'Agent 5: p6 - weight=0.75 '
+    ]
+
+pos = 'high'
+label = 'Finish Rate (pr. 500 eps)'
+compare(paths, legends, 'success', label,test, n, leg_pos=pos)
+label = 'Finish Rate (pr. 1000 eps)'
+compare(paths, legends, 'success', label,test, n, 1000, leg_pos=pos)
+
+label = 'Average Score (pr. 500 eps)'
+compare(paths, legends, 'scores', label,test, n, leg_pos=pos)
+label = 'Average Score (pr. 1000 eps)'
+compare(paths, legends, 'scores', label,test, n, 1000, leg_pos=pos)"""
 """
    episode_history = {
                 'epsilon' : epsilon_history,
