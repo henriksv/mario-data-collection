@@ -180,7 +180,7 @@ path6 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p6_0.5/
 path7 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p7_0.5_v4/mario_EDDQN_p7_0.5_v4_episodes.json'
 path8 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p8_0.5/mario_EDDQN_p8_0.5_episodes.json'
 path9 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p9_0.5/mario_EDDQN_p9_0.5_episodes.json'
-
+"""
 # Best
 paths = [
     pathX, 
@@ -244,11 +244,12 @@ label = 'Average Score (pr. 1000 eps)'
 compare(paths, legends, 'scores', label,test, n, 1000, leg_pos=pos, tail=tail)
 
 
-"""path01 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p0_0.25/mario_EDDQN_p0_0.25_episodes.json'
-path02 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p0_0.75/mario_EDDQN_p0_0.75_episodes.json'
+"""
+path01 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p0_0.25/mario_EDDQN_p0_0.25_episodes.json'
+path02 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p0_0.75_v3/mario_EDDQN_p0_0.75_v3_episodes.json'
 
 path61 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p6_0.25/mario_EDDQN_p6_0.25_episodes.json'
-path62 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p6_0.75/mario_EDDQN_p6_0.75_episodes.json'
+path62 = '/work/henriksv/code/mario-data-collection/mario_dqn/mario_EDDQN_p6_0.75_v4/mario_EDDQN_p6_0.75_v4_episodes.json'
 
 
 paths = [
@@ -260,7 +261,7 @@ paths = [
 
 
 test = 'weight_p0'
-n = 15000
+n = 10000
 legends = [
     'Agent X: vanilla', 
     'Agent 0: p0 - weight=0.25 ',
@@ -269,13 +270,10 @@ legends = [
     ]
 
 pos = 'high'
-label = 'Finish Rate (pr. 500 eps)'
-compare(paths, legends, 'success', label,test, n, leg_pos=pos)
 label = 'Finish Rate (pr. 1000 eps)'
 compare(paths, legends, 'success', label,test, n, 1000, leg_pos=pos)
 
-label = 'Average Score (pr. 500 eps)'
-compare(paths, legends, 'scores', label,test, n, leg_pos=pos)
+pos = 'low'
 label = 'Average Score (pr. 1000 eps)'
 compare(paths, legends, 'scores', label,test, n, 1000, leg_pos=pos)
 
@@ -283,12 +281,12 @@ paths = [
     pathX, 
     path61, 
     path6,  
-    #path62
+    path62
     ]
 
 
 test = 'weight_p6'
-n = 15000
+n = 10000
 legends = [
     'Agent X: vanilla', 
     'Agent 3: p6 - weight=0.25 ', 
@@ -297,15 +295,11 @@ legends = [
     ]
 
 pos = 'high'
-label = 'Finish Rate (pr. 500 eps)'
-compare(paths, legends, 'success', label,test, n, leg_pos=pos)
 label = 'Finish Rate (pr. 1000 eps)'
 compare(paths, legends, 'success', label,test, n, 1000, leg_pos=pos)
-
-label = 'Average Score (pr. 500 eps)'
-compare(paths, legends, 'scores', label,test, n, leg_pos=pos)
+pos = 'low'
 label = 'Average Score (pr. 1000 eps)'
-compare(paths, legends, 'scores', label,test, n, 1000, leg_pos=pos)"""
+compare(paths, legends, 'scores', label,test, n, 1000, leg_pos=pos)
 """
    episode_history = {
                 'epsilon' : epsilon_history,

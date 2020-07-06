@@ -1,0 +1,35 @@
+15000
+15000
+15000
+15000
+15000
+15000
+15000
+15000
+15000
+15000
+15000
+15000
+15000
+15000
+15000
+15000
+15000
+15000
+15000
+14151
+Traceback (most recent call last):
+  File "/work/henriksv/code/mario-data-collection/mario_dqn/plots/compare_multiple.py", line 302, in <module>
+    compare(paths, legends, 'success', label,test, n, 1000, leg_pos=pos)
+  File "/work/henriksv/code/mario-data-collection/mario_dqn/plots/compare_multiple.py", line 48, in compare
+    ax.plot(x, avg, color=color, label=legends[i])
+  File "/home/henriksv/anaconda3/envs/tf2/lib/python3.7/site-packages/matplotlib/axes/_axes.py", line 1665, in plot
+    lines = [*self._get_lines(*args, data=data, **kwargs)]
+  File "/home/henriksv/anaconda3/envs/tf2/lib/python3.7/site-packages/matplotlib/axes/_base.py", line 225, in __call__
+    yield from self._plot_args(this, kwargs)
+  File "/home/henriksv/anaconda3/envs/tf2/lib/python3.7/site-packages/matplotlib/axes/_base.py", line 391, in _plot_args
+    x, y = self._xy_from_xy(x, y)
+  File "/home/henriksv/anaconda3/envs/tf2/lib/python3.7/site-packages/matplotlib/axes/_base.py", line 270, in _xy_from_xy
+    "have shapes {} and {}".format(x.shape, y.shape))
+ValueError: x and y must have same first dimension, but have shapes (15000,) and (14151,)
+srun: error: g001: task 0: Exited with exit code 1
